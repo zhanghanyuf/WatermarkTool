@@ -492,8 +492,17 @@
             box-shadow: 0 2px 8px rgba(74, 108, 247, 0.3) !important;
         }
     </style>
-    <!-- Vercel Speed Insights -->
-    <script defer src="/_vercel/insights/script.js"></script>
+    <!-- 导入 Vercel Analytics 模块 -->
+    <script type="module">
+        import { inject } from '@vercel/analytics';
+        import { injectSpeedInsights } from '@vercel/speed-insights';
+        
+        // 页面加载完成后初始化 Analytics
+        document.addEventListener('DOMContentLoaded', function() {
+            inject();
+            injectSpeedInsights();
+        });
+    </script>
 </head>
 <body>
     <!-- 语言选择器 -->
@@ -633,11 +642,6 @@
             const savedLang = localStorage.getItem('preferred-language');
             if (savedLang) {
                 switchLanguage(savedLang);
-            }
-            
-            // 检查 injectSpeedInsights 函数是否存在，如果存在则调用
-            if (typeof injectSpeedInsights === 'function') {
-                injectSpeedInsights();
             }
         });
     </script>
