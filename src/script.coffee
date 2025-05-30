@@ -155,7 +155,7 @@ uploadArea.addEventListener 'drop', (e) ->
 
 # 下载功能
 downloadButton.addEventListener 'click', ->
-  return unless currentImage
+#   return unless currentImage
   
   link = document.createElement('a')
   link.download = 'watermarked-image.png'
