@@ -82,7 +82,7 @@ readFile = ->
 
     fileReader.readAsDataURL file
 
-    // 更新上传区域显示
+    # 更新上传区域显示
     fileName = if file.name.length > 25 then file.name.substring(0, 22) + '...' else file.name
     uploadArea.querySelector('.file-upload-text').innerHTML = "<strong>#{fileName}</strong><br>点击可重新选择图片"
     uploadArea.querySelector('.file-upload-btn').textContent = '更换图片' 
@@ -132,7 +132,7 @@ image.addEventListener 'change', ->
     return alert '仅支持 png, jpg, gif 图片格式' if file.type not in ['image/png', 'image/jpeg', 'image/gif']
     readFile()
 
-// 文件上传区域交互效果
+# 文件上传区域交互效果
 uploadArea.addEventListener 'dragover', (e) ->
   e.preventDefault()
   uploadArea.style.borderColor = '#4a6cf7'
@@ -153,7 +153,7 @@ uploadArea.addEventListener 'drop', (e) ->
     return alert '仅支持 png, jpg, gif 图片格式' if file.type not in ['image/png', 'image/jpeg', 'image/gif']
     readFile()
 
-// 下载功能
+# 下载功能
 downloadButton.addEventListener 'click', ->
   return unless currentImage
   
