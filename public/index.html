@@ -584,7 +584,7 @@
             // 语言切换函数
             function switchLanguage(lang) {
                 currentLang = lang;
-                
+
                 // 更新按钮状态
                 langButtons.forEach(btn => {
                     if (btn.getAttribute('data-lang') === lang) {
@@ -612,6 +612,10 @@
                 
                 // 更新HTML语言属性
                 document.documentElement.setAttribute('lang', lang === 'zh' ? 'zh-CN' : 'en');
+
+                // 触发语言变化事件
+                const event = new CustomEvent('languageChanged', { detail: { language: lang } });
+                document.dispatchEvent(event);
                 
                 // 保存用户语言偏好到本地存储
                 localStorage.setItem('preferred-language', lang);

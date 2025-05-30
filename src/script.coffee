@@ -17,6 +17,32 @@ canvas = null
 textCtx = null
 redraw = null
 
+# 语言相关
+getCurrentLanguage = ->
+  localStorage.getItem('preferred-language') || 'en'
+
+getTranslation = (key) ->
+  lang = getCurrentLanguage()
+  translations = {
+    'download_complete': {
+      'en': 'Download Complete',
+      'zh': '下载完成'
+    },
+    'change_image': {
+      'en': 'Change Image',
+      'zh': '更换图片'
+    },
+    'click_to_reselect': {
+      'en': 'Click to select another image',
+      'zh': '点击可重新选择图片'
+    },
+    'image_format_error': {
+      'en': 'Only png, jpg, gif image formats are supported',
+      'zh': '仅支持 png, jpg, gif 图片格式'
+    }
+  }
+  translations[key]?[lang] || translations[key]?['en'] || key
+
 dataURItoBlob = (dataURI) ->
     binStr = atob (dataURI.split ',')[1]
     len = binStr.length
@@ -82,10 +108,10 @@ readFile = ->
 
     fileReader.readAsDataURL file
 
-    # 更新上传区域显示
+    # 更新上传区域显示，支持多语言
     fileName = if file.name.length > 25 then file.name.substring(0, 22) + '...' else file.name
-    uploadArea.querySelector('.file-upload-text').innerHTML = "<strong>#{fileName}</strong><br>点击可重新选择图片"
-    uploadArea.querySelector('.file-upload-btn').textContent = '更换图片' 
+    uploadArea.querySelector('.file-upload-text').innerHTML = "<strong>#{fileName}</strong><br>" + getTranslation('click_to_reselect')
+    uploadArea.querySelector('.file-upload-btn').textContent = getTranslation('change_image')
     
 
 makeStyle = ->
@@ -129,7 +155,7 @@ drawText = ->
 image.addEventListener 'change', ->
     file = @files[0]
 
-    return alert '仅支持 png, jpg, gif 图片格式' if file.type not in ['image/png', 'image/jpeg', 'image/gif']
+    return alert getTranslation('image_format_error') if file.type not in ['image/png', 'image/jpeg', 'image/gif']
     readFile()
 
 # 文件上传区域交互效果
@@ -150,7 +176,7 @@ uploadArea.addEventListener 'drop', (e) ->
   if e.dataTransfer.files and e.dataTransfer.files[0]
     imageInput.files = e.dataTransfer.files
     file = e.dataTransfer.files[0]
-    return alert '仅支持 png, jpg, gif 图片格式' if file.type not in ['image/png', 'image/jpeg', 'image/gif']
+    return alert getTranslation('image_format_error') if file.type not in ['image/png', 'image/jpeg', 'image/gif']
     readFile()
 
 # 下载功能
@@ -160,15 +186,22 @@ downloadButton.addEventListener 'click', ->
   link.href = canvas.toDataURL('image/png')
   link.click()
   
-  # 添加下载成功反馈
+  # 添加下载成功反馈，支持多语言
   originalText = downloadButton.innerHTML
-  downloadButton.innerHTML = '<i class="fas fa-check"></i> 下载完成'
+  downloadButton.innerHTML = '<i class="fas fa-check"></i> ' + getTranslation('download_complete')
   downloadButton.style.background = 'linear-gradient(90deg, #2ecc71, #1abc9c)'
   
   setTimeout ->
     downloadButton.innerHTML = originalText
     downloadButton.style.background = ''
   , 2000
+
+# 监听语言变化，在语言切换时更新界面文本
+document.addEventListener 'languageChanged', (e) ->
+  if file?
+    fileName = if file.name.length > 25 then file.name.substring(0, 22) + '...' else file.name
+    uploadArea.querySelector('.file-upload-text').innerHTML = "<strong>#{fileName}</strong><br>" + getTranslation('click_to_reselect')
+    uploadArea.querySelector('.file-upload-btn').textContent = getTranslation('change_image')
 
 
 inputItems.forEach (item) ->
@@ -185,4 +218,3 @@ inputItems.forEach (item) ->
         drawText() if autoRefresh.checked
 
     refresh.addEventListener 'click', drawText
-
