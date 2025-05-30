@@ -155,12 +155,17 @@ uploadArea.addEventListener 'drop', (e) ->
 
 # 下载功能
 downloadButton.addEventListener 'click', ->
-#   return unless currentImage
-  
   link = document.createElement('a')
-  link.download = 'watermarked-image.png'
-  link.href = canvas.toDataURL('image/png')
-  link.click()
+  link.download = generateFileName()
+  imageData = canvas.toDataURL 'image/png'
+  blob = dataURItoBlob imageData
+  link.href = URL.createObjectURL blob
+  graph.appendChild link
+
+  setTimeout ->
+    link.click()
+    graph.removeChild link
+    , 100
   
   # 添加下载成功反馈
   originalText = downloadButton.innerHTML
