@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <title>图片水印打码工具 - 安全便捷</title>
+    <title>Image Watermark Tool 图片水印打码工具 - 安全便捷</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
@@ -334,6 +334,41 @@
             margin-right: 5px;
         }
         
+        /* 语言选择器样式 */
+        .language-selector {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            display: flex;
+            align-items: center;
+            z-index: 10;
+        }
+        
+        .language-btn {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid #e0e6ed;
+            border-radius: 20px;
+            padding: 6px 12px;
+            font-size: 13px;
+            color: #4a6cf7;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-left: 8px;
+            font-weight: 500;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+        
+        .language-btn:hover {
+            background: #f0f4ff;
+            transform: translateY(-2px);
+        }
+        
+        .language-btn.active {
+            background: #4a6cf7;
+            color: white;
+            border-color: #4a6cf7;
+        }
+        
         /* 移动端优化 */
         @media (max-width: 480px) {
             #container {
@@ -416,6 +451,16 @@
                 min-width: 110px;
                 flex: 1;
             }
+            
+            .language-selector {
+                top: 10px;
+                right: 10px;
+            }
+            
+            .language-btn {
+                padding: 5px 10px;
+                font-size: 12px;
+            }
         }
         
         /* 平板优化 */
@@ -451,29 +496,35 @@
     <script defer src="/_vercel/insights/script.js"></script>
 </head>
 <body>
+    <!-- 语言选择器 -->
+    <div class="language-selector">
+        <button class="language-btn active" data-lang="en">English</button>
+        <button class="language-btn" data-lang="zh">中文</button>
+    </div>
+    
     <div id="container">
         <div class="header">
-            <h1>图片水印打码工具</h1>
-            <p class="subtitle">安全地为敏感图片添加水印，完全在浏览器中处理，保护您的隐私</p>
-            <div class="feature-badge">100% 离线处理</div>
+            <h1 class="lang-text" data-en="Image Watermark Tool" data-zh="图片水印打码工具">Image Watermark Tool</h1>
+            <p class="subtitle lang-text" data-en="Safely add watermarks to sensitive images, processed entirely in your browser to protect your privacy" data-zh="安全地为敏感图片添加水印，完全在浏览器中处理，保护您的隐私">Safely add watermarks to sensitive images, processed entirely in your browser to protect your privacy</p>
+            <div class="feature-badge lang-text" data-en="100% OFFLINE" data-zh="100% 离线处理">100% OFFLINE</div>
         </div>
         
         <div class="step">
             <div class="step-number">1</div>
-            <div class="step-label"><i class="fas fa-cloud-upload-alt"></i> 选择图片</div>
+            <div class="step-label"><i class="fas fa-cloud-upload-alt"></i> <span class="lang-text" data-en="Select Image" data-zh="选择图片">Select Image</span></div>
             <div class="file-upload-area" id="upload-area">
                 <i class="fas fa-file-image"></i>
-                <div class="file-upload-text">拖放图片到此处，或点击上传</div>
-                <div class="file-upload-btn">选择图片</div>
+                <div class="file-upload-text lang-text" data-en="Drag and drop an image here, or click to upload" data-zh="拖放图片到此处，或点击上传">Drag and drop an image here, or click to upload</div>
+                <div class="file-upload-btn lang-text" data-en="Choose Image" data-zh="选择图片">Choose Image</div>
                 <input type="file" id="image" accept="image/*">
             </div>
         </div>
         
         <div class="step">
             <div class="step-number">2</div>
-            <div class="step-label"><i class="fas fa-font"></i> 添加水印文字</div>
+            <div class="step-label"><i class="fas fa-font"></i> <span class="lang-text" data-en="Add Watermark Text" data-zh="添加水印文字">Add Watermark Text</span></div>
             <div class="input-group">
-                <input type="text" id="text" class="text-input" placeholder="输入水印文字（如：仅供办理XX业务使用）" maxlength="40">
+                <input type="text" id="text" class="text-input lang-placeholder" data-en="Enter watermark text (e.g., For verification purposes only)" data-zh="输入水印文字（如：仅供办理XX业务使用）" placeholder="Enter watermark text (e.g., For verification purposes only)" maxlength="40">
             </div>
             
             <!-- 隐藏的控制选项，但保留ID以便script.js可以找到它们 -->
@@ -488,11 +539,11 @@
         
         <div class="step">
             <div class="step-number">3</div>
-            <div class="step-label"><i class="fas fa-eye"></i> 预览与下载</div>
+            <div class="step-label"><i class="fas fa-eye"></i> <span class="lang-text" data-en="Preview & Download" data-zh="预览与下载">Preview & Download</span></div>
             <div class="preview-container">
                 <div class="preview-placeholder" id="preview-placeholder">
                     <i class="fas fa-image"></i>
-                    <p>上传图片并添加水印后，预览将显示在这里</p>
+                    <p class="lang-text" data-en="Upload an image and add watermark text to see the preview here" data-zh="上传图片并添加水印后，预览将显示在这里">Upload an image and add watermark text to see the preview here</p>
                 </div>
                 <div id="graph"></div>
             </div>
@@ -500,26 +551,86 @@
             <div class="controls">
                 <div class="checkbox-group">
                     <input type="checkbox" id="auto-refresh" checked>
-                    <label for="auto-refresh">实时更新预览</label>
+                    <label for="auto-refresh" class="lang-text" data-en="Auto-refresh preview" data-zh="实时更新预览">Auto-refresh preview</label>
                 </div>
                 <div class="btn-group">
-                    <button id="refresh" class="btn btn-secondary" disabled><i class="fas fa-sync-alt"></i> 刷新预览</button>
-                    <button id="download" class="btn btn-primary" disabled><i class="fas fa-download"></i> 下载图片</button>
+                    <button id="refresh" class="btn btn-secondary" disabled><i class="fas fa-sync-alt"></i> <span class="lang-text" data-en="Refresh" data-zh="刷新预览">Refresh</span></button>
+                    <button id="download" class="btn btn-primary" disabled><i class="fas fa-download"></i> <span class="lang-text" data-en="Download" data-zh="下载图片">Download</span></button>
                 </div>
             </div>
         </div>
         
         <div class="footer-note">
-            <p><i class="fas fa-shield-alt"></i> 所有处理均在您的浏览器中完成，图片不会上传到任何服务器</p>
-            <p><i class="fas fa-mobile-alt"></i> 完美适配手机、平板和电脑设备</p>
+            <p><i class="fas fa-shield-alt"></i> <span class="lang-text" data-en="All processing happens in your browser. Images are never uploaded to any server" data-zh="所有处理均在您的浏览器中完成，图片不会上传到任何服务器">All processing happens in your browser. Images are never uploaded to any server</span></p>
+            <p><i class="fas fa-mobile-alt"></i> <span class="lang-text" data-en="Fully compatible with mobile, tablet and desktop devices" data-zh="完美适配手机、平板和电脑设备">Fully compatible with mobile, tablet and desktop devices</span></p>
         </div>
     </div>
 
     <script src="./script.js"></script>
 
-    <!-- Vercel Speed Insights 初始化 -->
+    <!-- 语言切换功能 -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // 设置默认语言为英文
+            let currentLang = 'en';
+            
+            // 获取所有语言按钮
+            const langButtons = document.querySelectorAll('.language-btn');
+            
+            // 获取所有需要翻译的元素
+            const langElements = document.querySelectorAll('.lang-text');
+            const langPlaceholders = document.querySelectorAll('.lang-placeholder');
+            
+            // 语言切换函数
+            function switchLanguage(lang) {
+                currentLang = lang;
+                
+                // 更新按钮状态
+                langButtons.forEach(btn => {
+                    if (btn.getAttribute('data-lang') === lang) {
+                        btn.classList.add('active');
+                    } else {
+                        btn.classList.remove('active');
+                    }
+                });
+                
+                // 更新文本内容
+                langElements.forEach(el => {
+                    const text = el.getAttribute(`data-${lang}`);
+                    if (text) {
+                        el.textContent = text;
+                    }
+                });
+                
+                // 更新占位符文本
+                langPlaceholders.forEach(el => {
+                    const placeholder = el.getAttribute(`data-${lang}`);
+                    if (placeholder) {
+                        el.setAttribute('placeholder', placeholder);
+                    }
+                });
+                
+                // 更新HTML语言属性
+                document.documentElement.setAttribute('lang', lang === 'zh' ? 'zh-CN' : 'en');
+                
+                // 保存用户语言偏好到本地存储
+                localStorage.setItem('preferred-language', lang);
+            }
+            
+            // 为语言按钮添加点击事件
+            langButtons.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const lang = this.getAttribute('data-lang');
+                    switchLanguage(lang);
+                });
+            });
+            
+            // 检查本地存储中是否有语言偏好设置
+            const savedLang = localStorage.getItem('preferred-language');
+            if (savedLang) {
+                switchLanguage(savedLang);
+            }
+            
             // 检查 injectSpeedInsights 函数是否存在，如果存在则调用
             if (typeof injectSpeedInsights === 'function') {
                 injectSpeedInsights();
