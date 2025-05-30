@@ -154,18 +154,11 @@ uploadArea.addEventListener 'drop', (e) ->
     readFile()
 
 # 下载功能
-downloadButton.addEventListener 'click', ->
+downloadButton.addEventListener 'click', ->  
   link = document.createElement('a')
   link.download = generateFileName()
-  imageData = canvas.toDataURL 'image/png'
-  blob = dataURItoBlob imageData
-  link.href = URL.createObjectURL blob
-  graph.appendChild link
-
-  setTimeout ->
-    link.click()
-    graph.removeChild link
-    , 100
+  link.href = canvas.toDataURL('image/png')
+  link.click()
   
   # 添加下载成功反馈
   originalText = downloadButton.innerHTML
