@@ -42,10 +42,10 @@ readFile = ->
     fileReader.onload = ->
         img = new Image
         img.onload = ->
-            previewPlaceholder.style.display = 'none';
-            pcanvas.style.display = 'block';
-            refresh.disabled = false;
-            downloadButton.disabled = false;
+            previewPlaceholder.style.display = 'none'
+            pcanvas.style.display = 'block'
+            refresh.disabled = false
+            downloadButton.disabled = false
             canvas = document.createElement 'canvas'
             canvas.width = img.width
             canvas.height = img.height
@@ -83,9 +83,9 @@ readFile = ->
     fileReader.readAsDataURL file
 
     // 更新上传区域显示
-    const fileName = file.name.length > 25 ? file.name.substring(0, 22) + '...' : file.name;
-    uploadArea.querySelector('.file-upload-text').innerHTML = `<strong>${fileName}</strong><br>点击可重新选择图片`;
-    uploadArea.querySelector('.file-upload-btn').textContent = '更换图片';
+    fileName = if file.name.length > 25 then file.name.substring(0, 22) + '...' else file.name
+    uploadArea.querySelector('.file-upload-text').innerHTML = "<strong>#{fileName}</strong><br>点击可重新选择图片"
+    uploadArea.querySelector('.file-upload-btn').textContent = '更换图片' 
     
 
 makeStyle = ->
@@ -133,49 +133,44 @@ image.addEventListener 'change', ->
     readFile()
 
 // 文件上传区域交互效果
-uploadArea.addEventListener('dragover', (e) => {
-    e.preventDefault();
-    uploadArea.style.borderColor = '#4a6cf7';
-    uploadArea.style.backgroundColor = '#f0f4ff';
-});
-            
-uploadArea.addEventListener('dragleave', () => {
-    uploadArea.style.borderColor = '#d1d8e0';
-    uploadArea.style.backgroundColor = '#fdfdfd';
- });
-            
-uploadArea.addEventListener('drop', (e) => {
-    e.preventDefault();
-    uploadArea.style.borderColor = '#d1d8e0';
-    uploadArea.style.backgroundColor = '#fdfdfd';
-                
-    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-        imageInput.files = e.dataTransfer.files;
-        file = e.dataTransfer.files[0]
-        return alert '仅支持 png, jpg, gif 图片格式' if file.type not in ['image/png', 'image/jpeg', 'image/gif']
-        readFile()
-        }
-    });
+uploadArea.addEventListener 'dragover', (e) ->
+  e.preventDefault()
+  uploadArea.style.borderColor = '#4a6cf7'
+  uploadArea.style.backgroundColor = '#f0f4ff'
+
+uploadArea.addEventListener 'dragleave', ->
+  uploadArea.style.borderColor = '#d1d8e0'
+  uploadArea.style.backgroundColor = '#fdfdfd'
+
+uploadArea.addEventListener 'drop', (e) ->
+  e.preventDefault()
+  uploadArea.style.borderColor = '#d1d8e0'
+  uploadArea.style.backgroundColor = '#fdfdfd'
+  
+  if e.dataTransfer.files and e.dataTransfer.files[0]
+    imageInput.files = e.dataTransfer.files
+    file = e.dataTransfer.files[0]
+    return alert '仅支持 png, jpg, gif 图片格式' if file.type not in ['image/png', 'image/jpeg', 'image/gif']
+    readFile()
 
 // 下载功能
-downloadButton.addEventListener('click', function() {
-    if (!currentImage) return;
-                
-    const link = document.createElement('a');
-    link.download = 'watermarked-image.png';
-    link.href = canvas.toDataURL('image/png');
-    link.click();
-                
-    // 添加下载成功反馈
-    const originalText = downloadButton.innerHTML;
-    downloadButton.innerHTML = '<i class="fas fa-check"></i> 下载完成';
-    downloadButton.style.background = 'linear-gradient(90deg, #2ecc71, #1abc9c)';
-                
-    setTimeout(() => {
-        downloadButton.innerHTML = originalText;
-        downloadButton.style.background = '';
-        }, 2000);
-    });
+downloadButton.addEventListener 'click', ->
+  return unless currentImage
+  
+  link = document.createElement('a')
+  link.download = 'watermarked-image.png'
+  link.href = canvas.toDataURL('image/png')
+  link.click()
+  
+  # 添加下载成功反馈
+  originalText = downloadButton.innerHTML
+  downloadButton.innerHTML = '<i class="fas fa-check"></i> 下载完成'
+  downloadButton.style.background = 'linear-gradient(90deg, #2ecc71, #1abc9c)'
+  
+  setTimeout ->
+    downloadButton.innerHTML = originalText
+    downloadButton.style.background = ''
+  , 2000
 
 
 inputItems.forEach (item) ->
