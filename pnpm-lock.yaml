@@ -1,18 +1,52 @@
-lockfileVersion: '6.0'
+lockfileVersion: '9.0'
 
 settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
-dependencies:
-  coffeescript:
-    specifier: ^2.7.0
-    version: 2.7.0
+importers:
+
+  .:
+    dependencies:
+      '@vercel/speed-insights':
+        specifier: ^1.2.0
+        version: 1.2.0
+      coffeescript:
+        specifier: ^2.7.0
+        version: 2.7.0
 
 packages:
 
-  /coffeescript@2.7.0:
+  '@vercel/speed-insights@1.2.0':
+    resolution: {integrity: sha512-y9GVzrUJ2xmgtQlzFP2KhVRoCglwfRQgjyfY607aU0hh0Un6d0OUyrJkjuAlsV18qR4zfoFPs/BiIj9YDS6Wzw==}
+    peerDependencies:
+      '@sveltejs/kit': ^1 || ^2
+      next: '>= 13'
+      react: ^18 || ^19 || ^19.0.0-rc
+      svelte: '>= 4'
+      vue: ^3
+      vue-router: ^4
+    peerDependenciesMeta:
+      '@sveltejs/kit':
+        optional: true
+      next:
+        optional: true
+      react:
+        optional: true
+      svelte:
+        optional: true
+      vue:
+        optional: true
+      vue-router:
+        optional: true
+
+  coffeescript@2.7.0:
     resolution: {integrity: sha512-hzWp6TUE2d/jCcN67LrW1eh5b/rSDKQK6oD6VMLlggYVUUFexgTH9z3dNYihzX4RMhze5FTUsUmOXViJKFQR/A==}
     engines: {node: '>=6'}
     hasBin: true
-    dev: false
+
+snapshots:
+
+  '@vercel/speed-insights@1.2.0': {}
+
+  coffeescript@2.7.0: {}
