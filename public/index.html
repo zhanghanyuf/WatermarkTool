@@ -516,6 +516,16 @@
     </div>
 
     <script src="./script.js"></script>
+
+    <!-- Vercel Speed Insights 初始化 -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 检查 injectSpeedInsights 函数是否存在，如果存在则调用
+            if (typeof injectSpeedInsights === 'function') {
+                injectSpeedInsights();
+            }
+        });
+    </script>
     <!-- placeholder -->
 </body>
 </html>
