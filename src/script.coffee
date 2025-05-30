@@ -19,7 +19,6 @@ dataURItoBlob = (dataURI) ->
 
     for i in [0..len - 1]
         arr[i] = binStr.charCodeAt i
-    new Blob [arr], type: 'image/png'
 
 
 generateFileName = ->
