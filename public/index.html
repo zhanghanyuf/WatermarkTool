@@ -473,6 +473,15 @@
             <div class="input-group">
                 <input type="text" id="text" class="text-input" placeholder="输入水印文字（如：仅供办理XX业务使用）" maxlength="40">
             </div>
+            
+            <!-- 隐藏的控制选项，但保留ID以便script.js可以找到它们 -->
+            <div style="display:none">
+                <input type="color" id="color" value="#808080">
+                <input type="range" id="alpha" min="0" max="1" step="0.05" value="0.15">
+                <input type="range" id="angle" min="-90" max="90" step="3" value="45">
+                <input type="range" id="space" min="1" max="8" step="0.2" value="4">
+                <input type="range" id="size" min="0.5" max="3" step="0.05" value="1">
+            </div>
         </div>
         
         <div class="step">
@@ -483,7 +492,7 @@
                     <i class="fas fa-image"></i>
                     <p>上传图片并添加水印后，预览将显示在这里</p>
                 </div>
-                <canvas id="preview-canvas"></canvas>
+                <div id="graph"></div>
             </div>
             
             <div class="controls">
@@ -504,160 +513,7 @@
         </div>
     </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // 获取DOM元素
-            const imageInput = document.getElementById('image');
-            const textInput = document.getElementById('text');
-            const autoRefreshCheckbox = document.getElementById('auto-refresh');
-            const refreshButton = document.getElementById('refresh');
-            const downloadButton = document.getElementById('download');
-            const canvas = document.getElementById('preview-canvas');
-            const ctx = canvas.getContext('2d');
-            const previewPlaceholder = document.getElementById('preview-placeholder');
-            const uploadArea = document.getElementById('upload-area');
-            
-            let currentImage = null;
-            
-            // 文件上传区域交互效果
-            uploadArea.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                uploadArea.style.borderColor = '#4a6cf7';
-                uploadArea.style.backgroundColor = '#f0f4ff';
-            });
-            
-            uploadArea.addEventListener('dragleave', () => {
-                uploadArea.style.borderColor = '#d1d8e0';
-                uploadArea.style.backgroundColor = '#fdfdfd';
-            });
-            
-            uploadArea.addEventListener('drop', (e) => {
-                e.preventDefault();
-                uploadArea.style.borderColor = '#d1d8e0';
-                uploadArea.style.backgroundColor = '#fdfdfd';
-                
-                if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-                    imageInput.files = e.dataTransfer.files;
-                    handleImageUpload(e.dataTransfer.files[0]);
-                }
-            });
-            
-            // 图片上传处理
-            imageInput.addEventListener('change', function(e) {
-                if (this.files && this.files[0]) {
-                    handleImageUpload(this.files[0]);
-                }
-            });
-            
-            function handleImageUpload(file) {
-                const reader = new FileReader();
-                
-                reader.onload = function(e) {
-                    const img = new Image();
-                    img.onload = function() {
-                        currentImage = img;
-                        previewPlaceholder.style.display = 'none';
-                        canvas.style.display = 'block';
-                        drawImageWithWatermark();
-                        refreshButton.disabled = false;
-                        downloadButton.disabled = false;
-                    };
-                    img.src = e.target.result;
-                };
-                
-                reader.readAsDataURL(file);
-                
-                // 更新上传区域显示
-                const fileName = file.name.length > 25 ? file.name.substring(0, 22) + '...' : file.name;
-                uploadArea.querySelector('.file-upload-text').innerHTML = `<strong>${fileName}</strong><br>点击可重新选择图片`;
-                uploadArea.querySelector('.file-upload-btn').textContent = '更换图片';
-            }
-            
-            // 水印绘制函数
-            function drawImageWithWatermark() {
-                if (!currentImage) return;
-                
-                // 设置canvas尺寸
-                const maxWidth = Math.min(window.innerWidth * 0.9, 550);
-                const ratio = Math.min(maxWidth / currentImage.width, 1);
-                canvas.width = currentImage.width * ratio;
-                canvas.height = currentImage.height * ratio;
-                
-                // 绘制原始图片
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                ctx.drawImage(currentImage, 0, 0, canvas.width, canvas.height);
-                
-                // 添加水印
-                const watermarkText = textInput.value.trim();
-                if (watermarkText) {
-                    ctx.globalAlpha = 0.2;
-                    const fontSize = Math.max(canvas.width * 0.04, 18);
-                    ctx.font = `bold ${fontSize}px Arial`;
-                    ctx.fillStyle = '#FF0000';
-                    ctx.textAlign = 'center';
-                    ctx.textBaseline = 'middle';
-                    
-                    // 计算水印位置 - 在图片中心
-                    const x = canvas.width / 2;
-                    const y = canvas.height / 2;
-                    
-                    // 添加文字阴影增强可读性
-                    ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
-                    ctx.shadowBlur = 3;
-                    ctx.shadowOffsetX = 1;
-                    ctx.shadowOffsetY = 1;
-                    
-                    // 绘制水印文字
-                    ctx.fillText(watermarkText, x, y);
-                    
-                    // 重置阴影和透明度
-                    ctx.shadowColor = 'transparent';
-                    ctx.shadowBlur = 0;
-                    ctx.globalAlpha = 1.0;
-                }
-            }
-            
-            // 输入变化时更新水印
-            textInput.addEventListener('input', function() {
-                if (autoRefreshCheckbox.checked && currentImage) {
-                    drawImageWithWatermark();
-                }
-            });
-            
-            // 手动刷新按钮
-            refreshButton.addEventListener('click', drawImageWithWatermark);
-            
-            // 下载功能
-            downloadButton.addEventListener('click', function() {
-                if (!currentImage) return;
-                
-                const link = document.createElement('a');
-                link.download = 'watermarked-image.png';
-                link.href = canvas.toDataURL('image/png');
-                link.click();
-                
-                // 添加下载成功反馈
-                const originalText = downloadButton.innerHTML;
-                downloadButton.innerHTML = '<i class="fas fa-check"></i> 下载完成';
-                downloadButton.style.background = 'linear-gradient(90deg, #2ecc71, #1abc9c)';
-                
-                setTimeout(() => {
-                    downloadButton.innerHTML = originalText;
-                    downloadButton.style.background = '';
-                }, 2000);
-            });
-            
-            // 初始禁用按钮
-            refreshButton.disabled = true;
-            downloadButton.disabled = true;
-            
-            // 窗口大小变化时重新绘制
-            window.addEventListener('resize', function() {
-                if (currentImage) {
-                    drawImageWithWatermark();
-                }
-            });
-        });
-    </script>
+    <script src="./script.js"></script>
+    <!-- placeholder -->
 </body>
 </html>
