@@ -1,59 +1,663 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
-    <title>图片水印打码工具</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>图片水印打码工具 - 安全便捷</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        #container {
-            max-width: 500px;
-            margin: 30px auto;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
         }
-
-        h1 { margin: 0 }
-        p, article { margin: 0 0 20px 0 }
-        article { font-size: 14px; color: #777 }
-
-        label { color: blue; font-size: 17px }
-        p label { color: black; display: inline-block; margin-right: 5px; font-size: 15px }
-        p { font-size: 15px; line-height: 30px }
-        p > * { vertical-align: middle }
-
-        input#text { width: 100%; box-sizing: border-box; font-size: 16px; margin-bottom: 10px }
-        input[type=range] { width: 200px; height: 18px; }
-
-        canvas { box-sizing: border-box; width: 100%; border: 1px dashed #AAA; cursor: pointer }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+            min-height: 100vh;
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #333;
+        }
+        
+        #container {
+            max-width: 600px;
+            width: 100%;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            padding: 25px;
+            margin: 15px auto;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+            position: relative;
+        }
+        
+        .header::after {
+            content: '';
+            position: absolute;
+            bottom: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 70px;
+            height: 4px;
+            background: linear-gradient(90deg, #4a6cf7, #82a0ff);
+            border-radius: 2px;
+        }
+        
+        h1 {
+            font-size: 26px;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+        
+        .subtitle {
+            font-size: 15px;
+            color: #7f8c8d;
+            line-height: 1.5;
+            max-width: 90%;
+            margin: 0 auto;
+        }
+        
+        .feature-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: linear-gradient(45deg, #ff6b6b, #ff8e53);
+            color: white;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            transform: rotate(5deg);
+            box-shadow: 0 4px 10px rgba(255, 107, 107, 0.3);
+        }
+        
+        .step {
+            background: #f8f9ff;
+            border-radius: 12px;
+            padding: 18px;
+            margin-bottom: 20px;
+            position: relative;
+            border-left: 4px solid #4a6cf7;
+            box-shadow: 0 4px 12px rgba(74, 108, 247, 0.05);
+        }
+        
+        .step-number {
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            width: 28px;
+            height: 28px;
+            background: #4a6cf7;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 15px;
+            box-shadow: 0 4px 8px rgba(74, 108, 247, 0.3);
+        }
+        
+        .step-label {
+            font-size: 17px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .step-label i {
+            margin-right: 8px;
+            color: #4a6cf7;
+        }
+        
+        .file-upload-area {
+            border: 2px dashed #d1d8e0;
+            border-radius: 10px;
+            padding: 25px 15px;
+            text-align: center;
+            background: #fdfdfd;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .file-upload-area:hover, .file-upload-area:active {
+            border-color: #4a6cf7;
+            background: #f0f4ff;
+        }
+        
+        .file-upload-area i {
+            font-size: 42px;
+            color: #a3b1ff;
+            margin-bottom: 12px;
+        }
+        
+        .file-upload-text {
+            font-size: 15px;
+            color: #7f8c8d;
+            margin-bottom: 10px;
+            line-height: 1.4;
+        }
+        
+        .file-upload-btn {
+            display: inline-block;
+            background: linear-gradient(90deg, #4a6cf7, #82a0ff);
+            color: white;
+            padding: 9px 20px;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(74, 108, 247, 0.25);
+            font-size: 14px;
+        }
+        
+        .file-upload-btn:hover, .file-upload-btn:active {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(74, 108, 247, 0.35);
+        }
+        
+        input[type="file"] {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+        
+        .input-group {
+            margin-bottom: 12px;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+            color: #2c3e50;
+        }
+        
+        .text-input {
+            width: 100%;
+            padding: 13px 18px;
+            border: 2px solid #e0e6ed;
+            border-radius: 10px;
+            font-size: 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .text-input:focus {
+            border-color: #4a6cf7;
+            box-shadow: 0 0 0 3px rgba(74, 108, 247, 0.2);
+            outline: none;
+        }
+        
+        .text-input::placeholder {
+            color: #b1b9c3;
+            font-size: 14px;
+        }
+        
+        .preview-container {
+            position: relative;
+            margin: 18px 0;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            min-height: 250px;
+            background: #f8f9ff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+        
+        .preview-placeholder {
+            text-align: center;
+            color: #a3b1ff;
+            padding: 25px;
+            font-size: 14px;
+        }
+        
+        .preview-placeholder i {
+            font-size: 56px;
+            margin-bottom: 12px;
+        }
+        
+        canvas {
+            width: 100%;
+            display: block;
+            cursor: pointer;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 18px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            flex: 1;
+            min-width: 140px;
+        }
+        
+        .checkbox-group label {
+            margin-left: 8px;
+            font-weight: 500;
+            color: #2c3e50;
+            font-size: 14px;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 11px 24px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 120px;
+        }
+        
+        .btn i {
+            margin-right: 6px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(90deg, #4a6cf7, #82a0ff);
+            color: white;
+            box-shadow: 0 4px 15px rgba(74, 108, 247, 0.3);
+        }
+        
+        .btn-primary:hover, .btn-primary:active {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(74, 108, 247, 0.4);
+        }
+        
+        .btn-primary:disabled {
+            background: #b1b9c3;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+            opacity: 0.7;
+        }
+        
+        .btn-secondary {
+            background: #f1f4f8;
+            color: #4a6cf7;
+        }
+        
+        .btn-secondary:hover, .btn-secondary:active {
+            background: #e4e9f4;
+        }
+        
+        .footer-note {
+            text-align: center;
+            margin-top: 22px;
+            font-size: 13px;
+            color: #7f8c8d;
+            padding-top: 12px;
+            border-top: 1px solid #eee;
+            line-height: 1.5;
+        }
+        
+        .footer-note i {
+            color: #4a6cf7;
+            margin-right: 5px;
+        }
+        
+        /* 移动端优化 */
+        @media (max-width: 480px) {
+            #container {
+                padding: 20px 15px;
+                border-radius: 12px;
+            }
+            
+            h1 {
+                font-size: 22px;
+            }
+            
+            .subtitle {
+                font-size: 14px;
+                max-width: 100%;
+            }
+            
+            .step {
+                padding: 16px 12px;
+                margin-bottom: 16px;
+            }
+            
+            .step-label {
+                font-size: 16px;
+            }
+            
+            .file-upload-area {
+                padding: 20px 12px;
+            }
+            
+            .file-upload-area i {
+                font-size: 36px;
+            }
+            
+            .file-upload-text {
+                font-size: 14px;
+            }
+            
+            .file-upload-btn {
+                padding: 8px 16px;
+                font-size: 13px;
+            }
+            
+            .text-input {
+                padding: 12px 16px;
+                font-size: 14px;
+            }
+            
+            .preview-container {
+                min-height: 220px;
+            }
+            
+            .preview-placeholder {
+                padding: 20px;
+                font-size: 13px;
+            }
+            
+            .preview-placeholder i {
+                font-size: 48px;
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+            }
+            
+            .checkbox-group {
+                justify-content: center;
+                min-width: 100%;
+            }
+            
+            .btn-group {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .btn {
+                padding: 10px 20px;
+                font-size: 14px;
+                min-width: 110px;
+                flex: 1;
+            }
+        }
+        
+        /* 平板优化 */
+        @media (min-width: 481px) and (max-width: 768px) {
+            #container {
+                max-width: 90%;
+            }
+            
+            .btn {
+                min-width: 130px;
+            }
+        }
+        
+        /* 防止移动端输入框被放大 */
+        @media (max-width: 768px) {
+            input, select, textarea {
+                font-size: 16px !important;
+            }
+        }
+        
+        /* 触摸反馈优化 */
+        .btn, .file-upload-btn {
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+        
+        .btn:active, .file-upload-btn:active {
+            transform: translateY(1px) !important;
+            box-shadow: 0 2px 8px rgba(74, 108, 247, 0.3) !important;
+        }
     </style>
 </head>
+<body>
     <div id="container">
-        <h1>图片水印打码工具</h1>
-        <article>安全地为你的图片加水印，无任何网络请求，特别适合各种敏感证件（身份证，驾照，护照等）。</article>
-
-        <label for="image">第一步：先选择一张本地图片</label>
-        <p><input type="file" id="image" autocomplete="off"></p>
-
-        
-        <label for="text">第二步：输入需要打水印的文字</label>
-        <p><input type="text" id="text" placeholder="请输入文字" autocomplete="off" maxlength="30">
-        
-        <!-- 默认值设置，但不显示在界面上 -->
-        <div style="display:none">
-            <input type="color" id="color" value="#808080">
-            <input type="range" id="alpha" min="0" max="1" step="0.05" value="0.15">
-            <input type="range" id="angle" min="-90" max="90" step="3" value="45">
-            <input type="range" id="space" min="1" max="8" step="0.2" value="4">
-            <input type="range" id="size" min="0.5" max="3" step="0.05" value="1">
+        <div class="header">
+            <h1>图片水印打码工具</h1>
+            <p class="subtitle">安全地为敏感图片添加水印，完全在浏览器中处理，保护您的隐私</p>
+            <div class="feature-badge">100% 离线处理</div>
         </div>
-        </p>
         
-        <label for="text">第三步：点击图片下载</label>
-        <p>
-            <label for="auto-refresh">实时刷新</label>
-            <input type="checkbox" id="auto-refresh" autocomplete="off" checked>
-            <button id="refresh" disabled>刷新</button>
-        </p>
-        <p id="graph"></p>
+        <div class="step">
+            <div class="step-number">1</div>
+            <div class="step-label"><i class="fas fa-cloud-upload-alt"></i> 选择图片</div>
+            <div class="file-upload-area" id="upload-area">
+                <i class="fas fa-file-image"></i>
+                <div class="file-upload-text">拖放图片到此处，或点击上传</div>
+                <div class="file-upload-btn">选择图片</div>
+                <input type="file" id="image" accept="image/*">
+            </div>
+        </div>
+        
+        <div class="step">
+            <div class="step-number">2</div>
+            <div class="step-label"><i class="fas fa-font"></i> 添加水印文字</div>
+            <div class="input-group">
+                <input type="text" id="text" class="text-input" placeholder="输入水印文字（如：仅供办理XX业务使用）" maxlength="40">
+            </div>
+        </div>
+        
+        <div class="step">
+            <div class="step-number">3</div>
+            <div class="step-label"><i class="fas fa-eye"></i> 预览与下载</div>
+            <div class="preview-container">
+                <div class="preview-placeholder" id="preview-placeholder">
+                    <i class="fas fa-image"></i>
+                    <p>上传图片并添加水印后，预览将显示在这里</p>
+                </div>
+                <canvas id="preview-canvas"></canvas>
+            </div>
+            
+            <div class="controls">
+                <div class="checkbox-group">
+                    <input type="checkbox" id="auto-refresh" checked>
+                    <label for="auto-refresh">实时更新预览</label>
+                </div>
+                <div class="btn-group">
+                    <button id="refresh" class="btn btn-secondary" disabled><i class="fas fa-sync-alt"></i> 刷新预览</button>
+                    <button id="download" class="btn btn-primary" disabled><i class="fas fa-download"></i> 下载图片</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer-note">
+            <p><i class="fas fa-shield-alt"></i> 所有处理均在您的浏览器中完成，图片不会上传到任何服务器</p>
+            <p><i class="fas fa-mobile-alt"></i> 完美适配手机、平板和电脑设备</p>
+        </div>
     </div>
-    <script src="./script.js"></script>
-    <!-- placeholder -->
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 获取DOM元素
+            const imageInput = document.getElementById('image');
+            const textInput = document.getElementById('text');
+            const autoRefreshCheckbox = document.getElementById('auto-refresh');
+            const refreshButton = document.getElementById('refresh');
+            const downloadButton = document.getElementById('download');
+            const canvas = document.getElementById('preview-canvas');
+            const ctx = canvas.getContext('2d');
+            const previewPlaceholder = document.getElementById('preview-placeholder');
+            const uploadArea = document.getElementById('upload-area');
+            
+            let currentImage = null;
+            
+            // 文件上传区域交互效果
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.style.borderColor = '#4a6cf7';
+                uploadArea.style.backgroundColor = '#f0f4ff';
+            });
+            
+            uploadArea.addEventListener('dragleave', () => {
+                uploadArea.style.borderColor = '#d1d8e0';
+                uploadArea.style.backgroundColor = '#fdfdfd';
+            });
+            
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.style.borderColor = '#d1d8e0';
+                uploadArea.style.backgroundColor = '#fdfdfd';
+                
+                if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                    imageInput.files = e.dataTransfer.files;
+                    handleImageUpload(e.dataTransfer.files[0]);
+                }
+            });
+            
+            // 图片上传处理
+            imageInput.addEventListener('change', function(e) {
+                if (this.files && this.files[0]) {
+                    handleImageUpload(this.files[0]);
+                }
+            });
+            
+            function handleImageUpload(file) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    const img = new Image();
+                    img.onload = function() {
+                        currentImage = img;
+                        previewPlaceholder.style.display = 'none';
+                        canvas.style.display = 'block';
+                        drawImageWithWatermark();
+                        refreshButton.disabled = false;
+                        downloadButton.disabled = false;
+                    };
+                    img.src = e.target.result;
+                };
+                
+                reader.readAsDataURL(file);
+                
+                // 更新上传区域显示
+                const fileName = file.name.length > 25 ? file.name.substring(0, 22) + '...' : file.name;
+                uploadArea.querySelector('.file-upload-text').innerHTML = `<strong>${fileName}</strong><br>点击可重新选择图片`;
+                uploadArea.querySelector('.file-upload-btn').textContent = '更换图片';
+            }
+            
+            // 水印绘制函数
+            function drawImageWithWatermark() {
+                if (!currentImage) return;
+                
+                // 设置canvas尺寸
+                const maxWidth = Math.min(window.innerWidth * 0.9, 550);
+                const ratio = Math.min(maxWidth / currentImage.width, 1);
+                canvas.width = currentImage.width * ratio;
+                canvas.height = currentImage.height * ratio;
+                
+                // 绘制原始图片
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.drawImage(currentImage, 0, 0, canvas.width, canvas.height);
+                
+                // 添加水印
+                const watermarkText = textInput.value.trim();
+                if (watermarkText) {
+                    ctx.globalAlpha = 0.2;
+                    const fontSize = Math.max(canvas.width * 0.04, 18);
+                    ctx.font = `bold ${fontSize}px Arial`;
+                    ctx.fillStyle = '#FF0000';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    
+                    // 计算水印位置 - 在图片中心
+                    const x = canvas.width / 2;
+                    const y = canvas.height / 2;
+                    
+                    // 添加文字阴影增强可读性
+                    ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
+                    ctx.shadowBlur = 3;
+                    ctx.shadowOffsetX = 1;
+                    ctx.shadowOffsetY = 1;
+                    
+                    // 绘制水印文字
+                    ctx.fillText(watermarkText, x, y);
+                    
+                    // 重置阴影和透明度
+                    ctx.shadowColor = 'transparent';
+                    ctx.shadowBlur = 0;
+                    ctx.globalAlpha = 1.0;
+                }
+            }
+            
+            // 输入变化时更新水印
+            textInput.addEventListener('input', function() {
+                if (autoRefreshCheckbox.checked && currentImage) {
+                    drawImageWithWatermark();
+                }
+            });
+            
+            // 手动刷新按钮
+            refreshButton.addEventListener('click', drawImageWithWatermark);
+            
+            // 下载功能
+            downloadButton.addEventListener('click', function() {
+                if (!currentImage) return;
+                
+                const link = document.createElement('a');
+                link.download = 'watermarked-image.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+                
+                // 添加下载成功反馈
+                const originalText = downloadButton.innerHTML;
+                downloadButton.innerHTML = '<i class="fas fa-check"></i> 下载完成';
+                downloadButton.style.background = 'linear-gradient(90deg, #2ecc71, #1abc9c)';
+                
+                setTimeout(() => {
+                    downloadButton.innerHTML = originalText;
+                    downloadButton.style.background = '';
+                }, 2000);
+            });
+            
+            // 初始禁用按钮
+            refreshButton.disabled = true;
+            downloadButton.disabled = true;
+            
+            // 窗口大小变化时重新绘制
+            window.addEventListener('resize', function() {
+                if (currentImage) {
+                    drawImageWithWatermark();
+                }
+            });
+        });
+    </script>
+</body>
 </html>
